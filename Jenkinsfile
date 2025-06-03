@@ -17,7 +17,10 @@ pipeline {
 
         stage('DAG Deploy') {
             steps {
-                sh 'docker cp python/dags airflow-airflow-scheduler-1:/opt/airflow/'
+                sh '''#!/bin/bash
+                    docker cp python/dags airflow-airflow-scheduler-1:/opt/airflow/
+                '''
+                
             }
         }
     }
