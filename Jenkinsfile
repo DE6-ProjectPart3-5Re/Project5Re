@@ -9,8 +9,6 @@ pipeline {
                     pip install --upgrade pip
                     pip install -r requirements.txt
                     flake8 python/dags/
-                    deactivate
-                    rm -rf venv
                 '''
             }
         }
