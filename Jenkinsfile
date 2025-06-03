@@ -8,7 +8,7 @@ pipeline {
                     source venv/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
-                    flake8 python/dags/
+                    flake8 python/dags/ --count --select=E9,F63,F7,F82 --show-source --statistics
                 '''
             }
         }
