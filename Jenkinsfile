@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Run flake8') {
             steps {
-                sh '''
+                sh '''#!/bin/bash
                     python3 -m venv venv
                     source venv/bin/activate
                     pip install --upgrade pip
@@ -21,7 +21,9 @@ pipeline {
 
         stage('DAG Deploy') {
             steps {
-                sh 'cp -r python/dags/ ${DAG_DEPLOY_PATH}'
+                sh '''#!/bin/bash
+                    cp -r python/dags/ ${DAG_DEPLOY_PATH}
+                '''
             }
         }
     }
