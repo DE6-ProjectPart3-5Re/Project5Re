@@ -12,7 +12,7 @@ import logging
 import psycopg2
 
 
-# 수정사항 반영 테스트
+# 수정사항 반영 테스트 2! auto push!
 def get_Redshift_connection(autocommit=True):
     hook = PostgresHook(postgres_conn_id='redshift_project_db')
     conn = hook.get_conn()
