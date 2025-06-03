@@ -1,13 +1,9 @@
 pipeline {
     agent any
-    environment {
-        DAG_DEPLOY_PATH = "/home/user/airflow/dags"
-    }
-
     stages {
         stage('Run flake8') {
             steps {
-                sh '''#!/bin/bash
+                sh '''
                     python3 -m venv venv
                     source venv/bin/activate
                     pip install --upgrade pip
@@ -21,9 +17,7 @@ pipeline {
 
         stage('DAG Deploy') {
             steps {
-                sh '''#!/bin/bash
-                    cp -r python/dags/ ${DAG_DEPLOY_PATH}
-                '''
+                sh 'docker cp python/dags airflow-airflow-scheduler-1:/opt/airflow/'
             }
         }
     }
