@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Run flake8') {
             steps {
-                sh '''                // 쉘 스크립트 실행 (멀티라인 사용 시 ''' ''' 사용)
+                sh '''
                     python3 -m venv venv
                     source venv/bin/activate
                     pip install --upgrade pip
