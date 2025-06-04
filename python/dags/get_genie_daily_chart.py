@@ -117,6 +117,7 @@ def load(**context):
             song_name = r["song_name"]
             song_artist = r["song_artist"]
             sql = f"INSERT INTO RAW_DATA.GENIE_DAILY_CHART(BASEDT,MUSIC_ID,MUSIC_NAME,MUSIC_RANK,ARTIST_NAME) VALUES ('{execution_date}', '{songId}', '{song_name}', {song_rank}, '{song_artist}')"
+            logging.info(sql)
             cur.execute(sql)
         cur.execute("COMMIT;")   # cur.execute("END;") 
     except (Exception, psycopg2.DatabaseError) as error:
