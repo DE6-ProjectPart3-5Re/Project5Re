@@ -127,8 +127,8 @@ def load(**context):
 
 
 dag = DAG(
-    dag_id = 'name_gender_v4',
-    start_date = datetime(2023,4,6), # 날짜가 미래인 경우 실행이 안됨
+    dag_id = 'GetGenieDaliyChart',
+    start_date = datetime(2024,6,1), # 날짜가 미래인 경우 실행이 안됨
     schedule_interval = None, # 수동 트리거로 변경
     #schedule = '0 2 * * *',  # 적당히 조절
     max_active_runs = 1,
