@@ -7,6 +7,7 @@ from datetime import datetime
 from datetime import timedelta
 
 import logging
+import psycopg2
 from selenium import webdriver
 from bs4 import BeautifulSoup
 
