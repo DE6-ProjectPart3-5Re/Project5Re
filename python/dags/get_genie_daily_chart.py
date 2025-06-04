@@ -91,7 +91,7 @@ def extract(**context):
     logging.basicConfig(level=logging.DEBUG)
     logging.info("get Genie chart data")
 
-    link = context["params"]["url"]
+    # link = context["params"]["url"]
     # task_instance = context['task_instance']
     execution_date = context['execution_date']
 
