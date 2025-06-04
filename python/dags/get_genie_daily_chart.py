@@ -28,7 +28,7 @@ class crawling_driver:
 
     def __enter__(self):
         # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-        self.driver = webdriver.Remote(command_executor="selenium:4444/wd/hub", options=self.options)
+        self.driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", options=self.options)
         self.driver.implicitly_wait(10) # seconds
         return self.driver
     def __exit__(self, exc_type, exc_value, traceback):
