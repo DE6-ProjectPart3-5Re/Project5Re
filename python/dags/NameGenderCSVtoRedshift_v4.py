@@ -14,7 +14,7 @@ import psycopg2
 
 # 수정사항 반영 테스트 2! auto push!
 def get_Redshift_connection(autocommit=True):
-    hook = PostgresHook(postgres_conn_id='redshift_project_db')
+    hook = PostgresHook(postgres_conn_id='snowflake_project_db')
     conn = hook.get_conn()
     conn.autocommit = autocommit
     return conn.cursor()
