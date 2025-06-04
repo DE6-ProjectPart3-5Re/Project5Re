@@ -36,8 +36,8 @@ def transform(**context):
     lines = text.strip().split("\n")[1:] # 첫 번째 라인을 제외하고 처리
     records = []
     for l in lines:
-      (name, gender) = l.split(",") # l = "Keeyong,M" -> [ 'keeyong', 'M' ]
-      records.append([name, gender])
+        (name, gender) = l.split(",") # l = "Keeyong,M" -> [ 'keeyong', 'M' ]
+        records.append([name, gender])
     logging.info("Transform ended")
     return records
 
@@ -50,9 +50,9 @@ def load(**context):
     records = context["task_instance"].xcom_pull(key="return_value", task_ids="transform")    
     """
     records = [
-      [ "Keeyong", "M" ],
-      [ "Claire", "F" ],
-      ...
+        [ "Keeyong", "M" ],
+        [ "Claire", "F" ],
+        ...
     ]
     """
     # BEGIN과 END를 사용해서 SQL 결과를 트랜잭션으로 만들어주는 것이 좋음
@@ -78,7 +78,8 @@ def load(**context):
 dag = DAG(
     dag_id = 'name_gender_v4',
     start_date = datetime(2023,4,6), # 날짜가 미래인 경우 실행이 안됨
-    schedule = '0 2 * * *',  # 적당히 조절
+    schedule_interval = None, # 수동 트리거로 변경
+    #schedule = '0 2 * * *',  # 적당히 조절
     max_active_runs = 1,
     catchup = False,
     default_args = {
