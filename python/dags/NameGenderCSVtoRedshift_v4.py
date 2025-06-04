@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.models import Variable
-from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
 
 from datetime import datetime
 from datetime import timedelta
@@ -14,7 +14,7 @@ import psycopg2
 
 # 수정사항 반영 테스트 2! auto push!
 def get_Redshift_connection(autocommit=True):
-    hook = PostgresHook(postgres_conn_id='snowflake_project_db')
+    hook = SnowflakeHook(snowflake_conn_id='snowflake_project_db')
     conn = hook.get_conn()
     conn.autocommit = autocommit
     return conn.cursor()
