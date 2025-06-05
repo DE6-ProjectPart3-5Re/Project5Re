@@ -59,15 +59,18 @@ def getGenieChart(ditc, date):
 
     with crawling_driver() as driver:
         list = []
-        for i in range(1, 5):
+        for i in range(1, 4):
             driver.get(url + f"&pg={i}")
             bs = BeautifulSoup(driver.find_element("xpath", "//*[@id=\"body-content\"]/div[4]/div/table/tbody").get_attribute('outerHTML'),"html.parser")
             
             for tr in bs.select("tr"):
                 songId = tr.get("songid")
-                song_rank = tr.find(class_="number").text.split("\n")[0].strip()
+                song_rank = tr.find(class_="number").find(text=True, recursive=False).strip()
                 info = tr.find(class_="info")
-                song_name = info.find(class_="title").text.strip()
+                title = info.find(class_="title")
+                span = title.find("span")
+                span and span.decompose()  # 19금 span 태그 있으면 제거
+                song_name = title.text.replace("\n", "").strip()  # 개행문자 제거 및 양쪽 공백 제거
                 song_artist = info.find(class_="artist").text.strip()
                 list.append({
                     "songId": songId,
@@ -114,8 +117,8 @@ def load(**context):
         for r in records:
             songId = r["songId"]
             song_rank = r["song_rank"]
-            song_name = r["song_name"].replace("'", "''")
-            song_artist = r["song_artist"].replace("'", "''")
+            song_name = r["song_name"].replace()("'", "''")
+            song_artist = r["song_artist"].replace()("'", "''")
             sql = f"INSERT INTO RAW_DATA.GENIE_DAILY_CHART(BASEDT,MUSIC_ID,MUSIC_NAME,MUSIC_RANK,ARTIST_NAME) VALUES ('{execution_date}', '{songId}', '{song_name}', {song_rank}, '{song_artist}')"
             logging.info(sql)
             cur.execute(sql)
