@@ -59,7 +59,7 @@ def getGenieChart(ditc, date):
 
     with crawling_driver() as driver:
         list = []
-        for i in range(1, 4):
+        for i in range(1, 5):
             driver.get(url + f"&pg={i}")
             bs = BeautifulSoup(driver.find_element("xpath", "//*[@id=\"body-content\"]/div[4]/div/table/tbody").get_attribute('outerHTML'),"html.parser")
             
@@ -69,7 +69,8 @@ def getGenieChart(ditc, date):
                 info = tr.find(class_="info")
                 title = info.find(class_="title")
                 span = title.find("span")
-                span and span.decompose()  # 19금 span 태그 있으면 제거
+                if span :
+                    span.decompose()  # 19금 span 태그 있으면 제거
                 song_name = title.text.replace("\n", "").strip()  # 개행문자 제거 및 양쪽 공백 제거
                 song_artist = info.find(class_="artist").text.strip()
                 list.append({
