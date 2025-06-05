@@ -61,6 +61,7 @@ def getGenieChart(ditc, date):
         list = []
         for i in range(1, 5):
             driver.get(url + f"&pg={i}")
+            basedt = driver.find_element("xpath", "//*[@id=\"inc_date\"]")
             bs = BeautifulSoup(driver.find_element("xpath", "//*[@id=\"body-content\"]/div[4]/div/table/tbody").get_attribute('outerHTML'),"html.parser")
             
             for tr in bs.select("tr"):
@@ -133,15 +134,14 @@ def load(**context):
 
 dag = DAG(
     dag_id = 'GetGenieDaliyChart',
-    start_date = datetime(2024,6,1), # 날짜가 미래인 경우 실행이 안됨
-    schedule_interval = None, # 수동 트리거로 변경
-    #schedule = '0 2 * * *',  # 적당히 조절
+    start_date = datetime(2025,5,1), # 날짜가 미래인 경우 실행이 안됨
+    schedule_interval = timedelta(days=1), # 일 1회 실행
+    schedule = '0 13 * * *',  # 적당히 조절
     max_active_runs = 1,
+    concurrency = 1,
     catchup = False,
     default_args = {
-        'retries': 1,
-        'retry_delay': timedelta(seconds=5),
-#        'on_failure_callback': slack.on_failure_callback,
+        'retries': 0
     }
 )
 
