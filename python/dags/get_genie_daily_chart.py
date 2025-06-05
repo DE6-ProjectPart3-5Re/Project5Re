@@ -139,6 +139,7 @@ dag = DAG(
     max_active_runs = 1,
     concurrency = 1,
     catchup = False,
+    timezone=pendulum.timezone("Asia/Seoul"),
     default_args = {
         'retries': 0
     }
