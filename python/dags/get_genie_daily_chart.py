@@ -117,8 +117,8 @@ def load(**context):
         for r in records:
             songId = r["songId"]
             song_rank = r["song_rank"]
-            song_name = r["song_name"].replace()("'", "''")
-            song_artist = r["song_artist"].replace()("'", "''")
+            song_name = r["song_name"].replace("'", "''")
+            song_artist = r["song_artist"].replace("'", "''")
             sql = f"INSERT INTO RAW_DATA.GENIE_DAILY_CHART(BASEDT,MUSIC_ID,MUSIC_NAME,MUSIC_RANK,ARTIST_NAME) VALUES ('{execution_date}', '{songId}', '{song_name}', {song_rank}, '{song_artist}')"
             logging.info(sql)
             cur.execute(sql)
