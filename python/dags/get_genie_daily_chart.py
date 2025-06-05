@@ -6,6 +6,7 @@ from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
 from datetime import datetime
 from datetime import timedelta
 
+import pendulum
 import logging
 import psycopg2
 from selenium import webdriver
