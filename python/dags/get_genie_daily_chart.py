@@ -135,7 +135,6 @@ def load(**context):
 dag = DAG(
     dag_id = 'GetGenieDaliyChart',
     start_date = datetime(2025,5,1), # 날짜가 미래인 경우 실행이 안됨
-    schedule_interval = timedelta(days=1), # 일 1회 실행
     schedule = '0 13 * * *',  # 적당히 조절
     max_active_runs = 1,
     concurrency = 1,
