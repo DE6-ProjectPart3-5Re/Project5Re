@@ -99,30 +99,40 @@ def extract(**context):
 
     # link = context["params"]["url"]
     # task_instance = context['task_instance']
+    ditc = context['params']['ditc']
     execution_date = context['execution_date']
 
     logging.info(execution_date)
-    result = getGenieChart("W", execution_date)
+    result = getGenieChart(ditc, execution_date)
     
     return result
 
 
 def load(**context):
+    ditc = context['params']['ditc']
     execution_date = context['execution_date'].strftime('%Y%m%d')
+    
+    if ditc == "D":   #일간차트, 선택한 일자 그대로 삽입.
+        baseDt = execution_date
+    elif ditc == "W": # 주간차트. 작업 기준일자의 월요일 구하기.
+        baseDt = execution_date - timedelta(days=execution_date.weekday())
+    elif ditc == "M": #월간 차트 선택한 일자의 1일자 구하기.
+        baseDt = execution_date.replace(day=1).strftime('%Y%m%d')
+    
     logging.info("load started")    
     records = context["task_instance"].xcom_pull(key="return_value", task_ids="extract")    
     # BEGIN과 END를 사용해서 SQL 결과를 트랜잭션으로 만들어주는 것이 좋음
     cur = get_snowflake_connection()
     try:
         cur.execute("BEGIN;")
-        cur.execute(f"DELETE FROM RAW_DATA.GENIE_WEEKLY_CHART WHERE BASEDT = {execution_date};") 
+        cur.execute(f"DELETE FROM RAW_DATA.GENIE_WEEKLY_CHART WHERE BASEDT = {baseDt};") 
         # DELETE FROM을 먼저 수행 -> FULL REFRESH을 하는 형태
         for r in records:
             songId = r["songId"]
             song_rank = r["song_rank"]
             song_name = r["song_name"].replace("'", "''")
             song_artist = r["song_artist"].replace("'", "''")
-            sql = f"INSERT INTO RAW_DATA.GENIE_DAILY_CHART(BASEDT,MUSIC_ID,MUSIC_NAME,MUSIC_RANK,ARTIST_NAME) VALUES ('{execution_date}', '{songId}', '{song_name}', {song_rank}, '{song_artist}')"
+            sql = f"INSERT INTO RAW_DATA.GENIE_WEEKLY_CHART(BASEDT,MUSIC_ID,MUSIC_NAME,MUSIC_RANK,ARTIST_NAME) VALUES ('{baseDt}', '{songId}', '{song_name}', {song_rank}, '{song_artist}')"
             logging.info(sql)
             cur.execute(sql)
         cur.execute("COMMIT;")   # cur.execute("END;") 
@@ -145,17 +155,22 @@ dag = DAG(
     }
 )
 
+DITC = "W" # D=일간차트, W=주간차트, M=월간차트, S=누적차트
 
 extract = PythonOperator(
     task_id = 'extract',
     python_callable = extract,
-    params = {},
+    params = {
+        'ditc': DITC,
+    },
     dag = dag)
 
 load = PythonOperator(
     task_id = 'load',
     python_callable = load,
-    params = {},
+    params = {
+        'ditc': DITC,
+    },
     dag = dag)
 
 extract >> load
