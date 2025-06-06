@@ -50,7 +50,7 @@ def getGenieChart(ditc, date):
     
     if ditc == "D":   #일간차트, 선택한 일자 그대로 삽입.
         url += f"&ymd={date.strftime('%Y%m%d')}"
-    elif ditc == "W": # 주간차트. 작업 기중일자의 월요일 구하기.
+    elif ditc == "W": # 주간차트. 작업 기준일자의 월요일 구하기.
         date = date - timedelta(days=date.weekday())
         url += f"&ymd={date.strftime('%Y%m%d')}"
     elif ditc == "M": #월간 차트 선택한 일자의 1일자 구하기.
@@ -102,7 +102,7 @@ def extract(**context):
     execution_date = context['execution_date']
 
     logging.info(execution_date)
-    result = getGenieChart("D", execution_date)
+    result = getGenieChart("W", execution_date)
     
     return result
 
@@ -115,7 +115,7 @@ def load(**context):
     cur = get_snowflake_connection()
     try:
         cur.execute("BEGIN;")
-        cur.execute(f"DELETE FROM RAW_DATA.GENIE_DAILY_CHART WHERE BASEDT = {execution_date};") 
+        cur.execute(f"DELETE FROM RAW_DATA.GENIE_WEEKLY_CHART WHERE BASEDT = {execution_date};") 
         # DELETE FROM을 먼저 수행 -> FULL REFRESH을 하는 형태
         for r in records:
             songId = r["songId"]
@@ -136,7 +136,7 @@ def load(**context):
 dag = DAG(
     dag_id = 'GetGenieDaliyChart',
     start_date = datetime(2025,5,1,tzinfo=pendulum.timezone("Asia/Seoul")), # 날짜가 미래인 경우 실행이 안됨
-    schedule = '0 13 * * *',  # 적당히 조절
+    schedule = '0 13 * * 1',  # 적당히 조절
     max_active_runs = 1,
     concurrency = 1,
     catchup = False,
