@@ -134,7 +134,7 @@ def load(**context):
 
 
 dag = DAG(
-    dag_id = 'GetGenieDaliyChart',
+    dag_id = 'GetGenieWeeklyChart',
     start_date = datetime(2025,5,1,tzinfo=pendulum.timezone("Asia/Seoul")), # 날짜가 미래인 경우 실행이 안됨
     schedule = '0 13 * * 1',  # 적당히 조절
     max_active_runs = 1,
