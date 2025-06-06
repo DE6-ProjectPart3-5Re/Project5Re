@@ -60,7 +60,7 @@ def getGenieChart(ditc, date):
 
     with crawling_driver() as driver:
         list = []
-        for i in range(1, 5):
+        for i in range(1, 3): #100위까지만 수집하도록 수정
             driver.get(url + f"&pg={i}")
             basedt = driver.find_element("xpath", "//*[@id=\"inc_date\"]")
             bs = BeautifulSoup(driver.find_element("xpath", "//*[@id=\"body-content\"]/div[4]/div/table/tbody").get_attribute('outerHTML'),"html.parser")
