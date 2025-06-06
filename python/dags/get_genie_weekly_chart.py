@@ -149,7 +149,7 @@ dag = DAG(
     schedule = '0 13 * * 1',  # 적당히 조절
     max_active_runs = 1,
     concurrency = 1,
-    catchup = True,
+    catchup = False,
     default_args = {
         'retries': 0
     }
