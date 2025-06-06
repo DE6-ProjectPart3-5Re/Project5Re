@@ -110,12 +110,12 @@ def extract(**context):
 
 def load(**context):
     ditc = context['params']['ditc']
-    execution_date = context['execution_date'].strftime('%Y%m%d')
+    execution_date = context['execution_date']
     
     if ditc == "D":   #일간차트, 선택한 일자 그대로 삽입.
-        baseDt = execution_date
+        baseDt = execution_date.strftime('%Y%m%d')
     elif ditc == "W": # 주간차트. 작업 기준일자의 월요일 구하기.
-        baseDt = execution_date - timedelta(days=execution_date.weekday())
+        baseDt = (execution_date - timedelta(days=execution_date.weekday())).strftime('%Y%m%d')
     elif ditc == "M": #월간 차트 선택한 일자의 1일자 구하기.
         baseDt = execution_date.replace(day=1).strftime('%Y%m%d')
     
