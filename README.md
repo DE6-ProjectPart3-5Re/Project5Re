@@ -2,7 +2,7 @@
 **다양한 출처의 사이트에서 음원 랭킹차트를 수집하여 순위및 기타 정보를 정리한 프로젝트 입니다.**
 
 
-### Stacks
+## Tech Stack
 <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
 <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
 <img src="https://img.shields.io/badge/airflow-017CEE?style=for-the-badge&logo=apacheairflow&logoColor=white">
