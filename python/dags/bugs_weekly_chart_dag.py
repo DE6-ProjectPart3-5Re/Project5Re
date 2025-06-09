@@ -47,7 +47,7 @@ def crawl_bugs_weekly_chart_by_date(date_str: str) -> pd.DataFrame:
 
 # 적재 함수 (Snowflake)
 def upload_to_snowflake(df: pd.DataFrame, table_name: str):
-    hook = SnowflakeHook(snowflake_conn_id="snowflake_conn_rawdata_db")
+    hook = SnowflakeHook(snowflake_conn_id="snowflake_project_db")
     conn = hook.get_conn()
 
     df.columns = [col.upper() for col in df.columns]

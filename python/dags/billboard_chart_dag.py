@@ -42,7 +42,7 @@ def extract_and_transform(execution_date=None):
 
 @task
 def load_to_snowflake(records):
-    hook = SnowflakeHook(snowflake_conn_id="snowflake_conn")
+    hook = SnowflakeHook(snowflake_conn_id="snowflake_project_db")
     conn = hook.get_conn()
     cur = conn.cursor()
     try:
