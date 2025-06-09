@@ -1,2 +1,5 @@
 apache-airflow==2.10.5
 flake8
+selenium
+bs4
+psycopg2-binary
