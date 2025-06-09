@@ -73,7 +73,7 @@ default_args = {
     default_args=default_args,
     schedule_interval="0 13 * * 1",  # 매주 월요일 오후 1시
     start_date=datetime(2023, 1, 1),
-    catchup=True,
+    catchup=False,
     tags=['bugs', 'chart', 'weekly'],
 )
 def bugs_weekly_etl():

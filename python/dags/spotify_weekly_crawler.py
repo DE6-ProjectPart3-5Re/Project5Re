@@ -416,7 +416,7 @@ with DAG(
     description='Weekly Spotify charts (KR, US, GB, GLOBAL via Selenium) to Snowflake',
     schedule_interval='0 9 * * 1', 
     start_date=start_date_for_dag_weekly,
-    catchup=True, 
+    catchup=False, 
     tags=['spotify', 'charts', 'selenium', 'snowflake', 'weekly', 'multi-country'],
     max_active_runs=1, 
 ) as dag_weekly_final_no_chart_type:
