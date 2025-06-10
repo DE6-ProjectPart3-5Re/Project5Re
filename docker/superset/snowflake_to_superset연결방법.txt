@@ -1,0 +1,14 @@
+superset 설치 자체는 다음 문서 참고.
+https://superset.apache.org/docs/installation/docker-compose/
+
+
+Snowflake to Superset
+(본 내용은 dockercompose 사용시 에 대한 내용입니다.)
+1. superset에 snowflake 드라이버 설치
+ {supersetPath}/docker/requirements-local.txt 파일에 원하는 DB의 PyPI package 명을 작성하여 저장.
+2.docker compose -f docker-compose-non-dev.yml up 명령어로 docker 실행.
+ 참고:https://superset.apache.org/docs/configuration/databases/#installing-drivers-in-docker-images
+
+3. superset 에 접속하여 db추가작업 중 other 추가 SQLAlchemy URI 는 아래 형태 참조
+ snowflake://{user}:{password}@{account}.{region}/{database}
+ ex) snowflake://UserId:Password@Account-Identifier/dbname
