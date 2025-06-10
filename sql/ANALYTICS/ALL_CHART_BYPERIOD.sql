@@ -1,0 +1,75 @@
+create or replace view DE6_PROJECT_III.ANALYTICS.ALL_CHART_BYPERIOD(
+	BASEDT,
+	MUSIC_NAME,
+	ARTIST_NAME,
+	AVG_SCORE,
+	INTEGRATED_RANK
+) as
+WITH all_charts AS (
+  -- Billboard
+  SELECT 
+    TO_DATE(BASEDT, 'YYYYMMDD') AS basedt,
+    MUSIC_NAME,
+    ARTIST_NAME,
+    101 - MUSIC_RANK AS score
+  FROM DE6_PROJECT_III.RAW_DATA.BILLBOARD_WEEKLY_CHART
+  WHERE MUSIC_RANK <= 100
+
+  UNION ALL
+
+  -- Bugs
+  SELECT 
+    TO_DATE(BASEDT, 'YYYYMMDD') AS basedt,
+    MUSIC_NAME,
+    ARTIST_NAME,
+    101 - MUSIC_RANK AS score
+  FROM DE6_PROJECT_III.RAW_DATA.BUGS_WEEKLY_CHART
+  WHERE MUSIC_RANK <= 100
+
+  UNION ALL
+
+  -- Genie
+  SELECT 
+    TO_DATE(BASEDT, 'YYYYMMDD') AS basedt,
+    MUSIC_NAME,
+    ARTIST_NAME,
+    101 - MUSIC_RANK AS score
+  FROM DE6_PROJECT_III.RAW_DATA.GENIE_WEEKLY_CHART
+  WHERE MUSIC_RANK <= 100
+
+  UNION ALL
+
+  -- Spotify
+  SELECT 
+    TO_DATE(BASEDT, 'YYYYMMDD') AS basedt,
+    MUSIC_NAME,
+    ARTIST_NAME,
+    101 - MUSIC_RANK AS score
+  FROM DE6_PROJECT_III.RAW_DATA.SPOTIFY_WEEKLY_CHART
+  WHERE MUSIC_RANK <= 100 AND COUNTRY_CODE='KR'
+),
+
+-- 날짜별 곡의 평균 점수 계산
+score_avg AS (
+  SELECT 
+    basedt,
+    MUSIC_NAME,
+    ARTIST_NAME,
+    ROUND(AVG(score), 2) AS avg_score
+  FROM all_charts
+  GROUP BY basedt, MUSIC_NAME, ARTIST_NAME
+),
+
+-- Superset에서 기간 필터를 위해 최종 집계 없이 전체 점수 출력
+ranked_result AS (
+  SELECT 
+    basedt,
+    MUSIC_NAME,
+    ARTIST_NAME,
+    avg_score,
+    RANK() OVER (PARTITION BY basedt ORDER BY avg_score DESC) AS integrated_rank
+  FROM score_avg
+)
+
+SELECT *
+FROM ranked_result;
