@@ -14,7 +14,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import os
 
@@ -100,13 +100,14 @@ def initialize_driver_and_login_once(google_email, google_password, initial_url=
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
     options.add_argument("accept-language=ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
     options.add_argument("--disable-blink-features=AutomationControlled"); options.add_experimental_option("excludeSwitches", ["enable-automation"]); options.add_experimental_option('useAutomationExtension', False)
-
+    
     driver = None
     for attempt in range(retries + 1):
         try:
             logger.info(f"WebDriver 서비스 시작 (시도 {attempt + 1}/{retries + 1})...")
-            service = ChromeService(ChromeDriverManager().install())
-            driver = webdriver.Chrome(service=service, options=options)
+            # service = ChromeService(ChromeDriverManager().install())
+            # driver = webdriver.Chrome(service=service, options=options)
+            driver = webdriver.Remote(command_executor="http://selenium:4444/wd/hub", options=options)
             driver.implicitly_wait(15)
             driver.set_page_load_timeout(120)
 
@@ -234,59 +235,8 @@ def login_to_spotify_with_google_v3(driver, google_email, google_password):
         logger.error(f"구글 로그인 과정 중 오류 발생: {e}", exc_info=True)
         return False
 
-def spotify_crawl(target_date_str, country_code, google_email, google_password, retries=0):
-    chart_type = 'weekly'
-    if country_code.upper() == 'GLOBAL':
-        chart_segment = f"regional-global-{chart_type.lower()}"
-    else:
-        chart_segment = f"regional-{country_code.lower()}-{chart_type.lower()}"
-    
-    chart_url = f"https://charts.spotify.com/charts/view/{chart_segment}/{target_date_str}"
-    initial_url = "https://charts.spotify.com/home"
-    logger.info(f"Selenium (login v3)으로 URL 요청: {chart_url} (초기 진입: {initial_url})")
-    
-    options = webdriver.ChromeOptions()
-    options.add_argument('--headless'); options.add_argument('--disable-gpu'); options.add_argument('--no-sandbox'); options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("--window-size=1366,768")
-    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
-    options.add_argument("accept-language=ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
-    options.add_argument("--disable-blink-features=AutomationControlled"); options.add_experimental_option("excludeSwitches", ["enable-automation"]); options.add_experimental_option('useAutomationExtension', False)
-
-    html_content = None
-    for attempt in range(retries + 1):
-        driver = None
-        try:
-            logger.info(f"WebDriver 서비스 시작 (시도 {attempt + 1}/{retries + 1})..."); service = ChromeService(ChromeDriverManager().install())
-            driver = webdriver.Chrome(service=service, options=options); driver.implicitly_wait(15); driver.set_page_load_timeout(120)
-            logger.info(f"초기 URL로 이동: {initial_url}"); driver.get(initial_url); time.sleep(7)
-            logger.info(f"차트 페이지로 직접 이동 시도하여 로그인 상태 확인: {chart_url}"); driver.get(chart_url); time.sleep(5)
-            try:
-                WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[data-testid='charts-table'] table tbody tr")))
-                logger.info("차트 데이터가 바로 보여 이미 로그인된 것으로 간주합니다.")
-            except:
-                logger.info("차트 데이터가 바로 보이지 않음. 로그인 과정 필요.")
-                if "accounts.spotify.com" not in driver.current_url and "charts.spotify.com/home" not in driver.current_url:
-                    logger.info(f"로그인 시작점으로 이동: {initial_url}"); driver.get(initial_url); time.sleep(5)
-                if not login_to_spotify_with_google_v3(driver, google_email, google_password):
-                    logger.error("구글 계정으로 Spotify 로그인 실패."); raise AirflowException("Spotify Login Failed")
-                logger.info(f"로그인 성공 후 다시 차트 페이지로 이동: {chart_url}"); driver.get(chart_url); time.sleep(15)
-                WebDriverWait(driver, 75).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[data-testid='charts-table'] table tbody tr")))
-                logger.info("로그인 후 차트 데이터 로드 확인됨.")
-            html_content = driver.page_source
-            if "데이터를 사용할 수 없습니다" in html_content or "No data available" in html_content:
-                logger.warning(f"페이지에 '{target_date_str}' ({country_code}, {chart_type})에 대한 데이터가 없다고 표시됩니다."); return None
-            logger.info(f"페이지 소스 가져오기 성공 (로그인 후, 길이: {len(html_content)}).")
-            return html_content
-        except Exception as e:
-            logger.error(f"Attempt {attempt + 1} failed for {chart_url}: {e}", exc_info=True)
-            if attempt < retries: logger.info(f"Retrying in 40 seconds..."); time.sleep(40)
-            else: logger.error(f"All {retries + 1} attempts failed for {chart_url}."); raise AirflowException(f"All attempts failed: {e}")
-        finally:
-            if driver: driver.quit(); logger.info("WebDriver 최종 종료됨 (login v3).")
-    return None
-
 def get_snowflake_hook():
-    return SnowflakeHook(snowflake_conn_id='snowflake_default')
+    return SnowflakeHook(snowflake_conn_id='snowflake_project_db')
 
 def save_data(snowflake_hook: SnowflakeHook, chart_data_list):
     if not chart_data_list: logger.warning("저장할 차트 데이터 없음."); return 0
