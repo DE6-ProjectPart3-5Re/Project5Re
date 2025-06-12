@@ -96,7 +96,6 @@ def bugs_weekly_etl():
         else:
             print("데이터 없음: 적재 생략")
 
-    #raw_date = get_last_week_monday()
     raw_date = format_date()
     df = extract_chart(raw_date)
     load_to_snowflake(df)
